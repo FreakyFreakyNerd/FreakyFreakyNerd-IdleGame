@@ -11,7 +11,7 @@ namespace FreakyFreakyNerd.IdleLibrary.Achievement
         private string ID;
         public string DisplayName { get; private set; }
         public string Description { get; private set; }
-        private List<Requirement> Requirements = new List<Requirement>();
+        private RequirementContainer Requirements = new RequirementContainer();
 
         public bool Obtained { get; private set; } = false;
 
@@ -20,13 +20,13 @@ namespace FreakyFreakyNerd.IdleLibrary.Achievement
             ID = id;
             LanguageManager.OnLanguageLoad += OnLanguageLoad;
         }
-        public GameAchievement(string id, params Requirement[] args)
+        public GameAchievement(string id, params IRequirement[] args)
         {
             ID = id;
             LanguageManager.OnLanguageLoad += OnLanguageLoad;
         }
 
-        public GameAchievement AddRequirement(Requirement requirement)
+        public GameAchievement AddRequirement(IRequirement requirement)
         {
             if (!Requirements.Contains(requirement))
             {
@@ -35,13 +35,13 @@ namespace FreakyFreakyNerd.IdleLibrary.Achievement
             return this;
         }
 
-        public GameAchievement AddRequirements(params Requirement[] args)
+        public GameAchievement AddRequirements(params IRequirement[] args)
         {
             this.AddRequirementArray(args);
             return this;
         }
 
-        public GameAchievement AddRequirementArray(Requirement[] requirements)
+        public GameAchievement AddRequirementArray(IRequirement[] requirements)
         {
             for(int i = 0; i < requirements.Length; i++)
             {
@@ -52,7 +52,7 @@ namespace FreakyFreakyNerd.IdleLibrary.Achievement
 
         private bool HasRequirements()
         {
-            foreach(Requirement r in Requirements)
+            foreach(IRequirement r in Requirements)
             {
                 if (!r.HasRequirement())
                     return false;

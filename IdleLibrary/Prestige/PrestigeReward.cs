@@ -45,6 +45,47 @@ namespace FreakyFreakyNerd.IdleLibrary.Prestige
 
     public class RewardHandler
     {
+        private List<IReward> Rewards = new List<IReward>();
 
+        public void AddReward(IReward reward)
+        {
+            if (!Rewards.Contains(reward))
+                Rewards.Add(reward);
+        }
+        public void AddRewards(IReward[] rewards)
+        {
+            for(int i = 0; i < rewards.Length; i++)
+            {
+                AddReward(rewards[i]);
+            }
+        }
+        public void RemoveReward(IReward reward)
+        {
+            if (Rewards.Contains(reward))
+                Rewards.Remove(reward);
+        }
+        public void RemoveRewards(IReward[] rewards)
+        {
+            for (int i = 0; i < rewards.Length; i++)
+            {
+                RemoveReward(rewards[i]);
+            }
+        }
+
+        public void UpdateRewards()
+        {
+            Rewards.ForEach((rew) =>
+            {
+                rew.UpdateValue();
+            });
+        }
+        public void ApplyRewards()
+        {
+            UpdateRewards();
+            Rewards.ForEach((rew) =>
+            {
+                rew.ApplyReward();
+            });
+        }
     }
 }

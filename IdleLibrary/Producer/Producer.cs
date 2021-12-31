@@ -2,6 +2,7 @@
 using FreakyFreakyNerd.IdleLibrary.BigMath;
 using FreakyFreakyNerd.IdleLibrary.Cost;
 using FreakyFreakyNerd.IdleLibrary.Currency;
+using FreakyFreakyNerd.IdleLibrary.Prestige;
 using FreakyFreakyNerd.IdleLibrary.Upgrade;
 using System;
 using System.Collections;
@@ -10,7 +11,7 @@ using UnityEngine;
 
 namespace FreakyFreakyNerd.IdleLibrary.Producer
 {
-    public class GameProducer : IHookable, ITickable, IBuyable, IContainer, IEffectable
+    public class GameProducer : IHookable, ITickable, IBuyable, IContainer, IEffectable, IResetable
     {
         private string ID;
 
@@ -19,6 +20,7 @@ namespace FreakyFreakyNerd.IdleLibrary.Producer
         private BigNum Bought = new BigNum();
         private List<Effect> AppliedEffects = new List<Effect>();
         private CostContainer Costs;
+        private ResetImmunity Immunity;
 
         public Production GetProduction(int v)
         {
@@ -77,6 +79,42 @@ namespace FreakyFreakyNerd.IdleLibrary.Producer
         public GameProducer AddCostArray(ICost[] prod)
         {
             Costs.AddCosts(prod);
+            return this;
+        }
+
+        public GameProducer RemoveProduction(Production prod)
+        {
+            if (!Productions.Contains(prod))
+                Productions.Remove(prod);
+            return this;
+        }
+        public GameProducer RemoveProductions(params Production[] prod)
+        {
+            RemoveProductionArray(prod);
+            return this;
+        }
+        public GameProducer RemoveProductionArray(Production[] prod)
+        {
+            for (int i = 0; i < prod.Length; i++)
+            {
+                RemoveProduction(prod[i]);
+            }
+            return this;
+        }
+        public GameProducer RemoveCost(ICost cost)
+        {
+            Costs.RemoveCost(cost);
+            UpdateCost();
+            return this;
+        }
+        public GameProducer RemoveCosts(params ICost[] prod)
+        {
+            RemoveCostArray(prod);
+            return this;
+        }
+        public GameProducer RemoveCostArray(ICost[] prod)
+        {
+            Costs.RemoveCosts(prod);
             return this;
         }
         public override void SetupHooks()
@@ -177,6 +215,51 @@ namespace FreakyFreakyNerd.IdleLibrary.Producer
         public virtual void RemoveAmount(BigNum amount)
         {
             Bought -= amount;
+        }
+
+        public virtual void OnReset(Reset reset)
+        {
+            if (Immunity.Immune(reset))
+                return;
+            Bought = new BigNum();
+            UpdateCost();
+            UpdateProduction();
+        }
+
+        public GameProducer AddImmunity(Reset reset)
+        {
+            Immunity.AddImmunity(reset);
+            return this;
+        }
+
+        public GameProducer AddImmunitys(params Reset[] resets)
+        {
+            Immunity.AddImmunitys(resets);
+            return this;
+        }
+
+        public GameProducer AddImmunityArray(Reset[] resets)
+        {
+            Immunity.AddImmunitys(resets);
+            return this;
+        }
+
+        public GameProducer RemoveImmunity(Reset reset)
+        {
+            Immunity.RemoveImmunity(reset);
+            return this;
+        }
+
+        public GameProducer RemoveImmunitys(params Reset[] resets)
+        {
+            Immunity.RemoveImmunitys(resets);
+            return this;
+        }
+
+        public GameProducer RemoveImmunityArray(Reset[] resets)
+        {
+            Immunity.RemoveImmunitys(resets);
+            return this;
         }
     }
 }
